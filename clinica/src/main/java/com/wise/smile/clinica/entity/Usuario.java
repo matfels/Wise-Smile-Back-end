@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity // Avisa o java que essa classe não e apenas um código e sim que representa uma tabela real na base de dados.
 @Table(name = "usuarios")
 @Data
 public class Usuario {
@@ -37,7 +37,7 @@ public class Usuario {
     @Column(name = "ultimo_login")
     private LocalDateTime ultimoLogin;
 
-    // O JPA usará o @PrePersist para preencher a data de criação automaticamente antes de salvar
+    // @PrePersist para preencher a data de criação automaticamente antes de salvar
     @PrePersist
     protected void onCreate() {
         this.dataCriacao = LocalDateTime.now();

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+public interface PacienteRepositories extends JpaRepository<Paciente, Integer> {
     Optional<Paciente> findByCpf(String cpf);
     Optional<Paciente> findByEmail(String email);
 }

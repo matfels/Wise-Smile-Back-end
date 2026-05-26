@@ -77,6 +77,11 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.wise.smile</groupId>
+			<artifactId>WiseSmile2</artifactId>
+			<version>0.0.1 - Wise</version>
+		</dependency>
 	</dependencies>
 
 	<build>

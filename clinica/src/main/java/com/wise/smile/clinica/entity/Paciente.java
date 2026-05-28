@@ -24,19 +24,9 @@ public class Paciente {
     @Column(length = 15)
     private String telefone;
 
-    @Column(columnDefinition = "boolean default true")
-    private Boolean ativo;
-
     @Column(name = "data_criacao", updatable = false)
     private LocalDateTime dataCriacao;
 
-    @PrePersist
-    protected void onCreate() {
-        this.dataCriacao = LocalDateTime.now();
-        if (this.ativo == null) {
-            this.ativo = true;
-        }
-    }
 
 	public Integer getId() {
 		return id;
@@ -78,13 +68,6 @@ public class Paciente {
 		this.telefone = telefone;
 	}
 
-	public Boolean getAtivo() {
-		return ativo;
-	}
-
-	public void setAtivo(Boolean ativo) {
-		this.ativo = ativo;
-	}
 
 	public LocalDateTime getDataCriacao() {
 		return dataCriacao;
@@ -97,7 +80,7 @@ public class Paciente {
 	@Override
 	public String toString() {
 		return "Paciente [id=" + id + ", nome=" + nome + ", email=" + email + ", cpf=" + cpf + ", telefone=" + telefone
-				+ ", ativo=" + ativo + ", dataCriacao=" + dataCriacao + "]";
+				+ ", dataCriacao=" + dataCriacao + "]";
 	}
     
 }

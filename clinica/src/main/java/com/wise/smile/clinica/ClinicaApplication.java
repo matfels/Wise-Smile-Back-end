@@ -13,6 +13,7 @@ import com.wise.smile.clinica.repositories.UsuarioRepositories;
 @SpringBootApplication
 public class ClinicaApplication implements CommandLineRunner{
 	
+	
 	@Autowired
 	private UsuarioRepositories usuarioRepositories;
 	
@@ -21,6 +22,8 @@ public class ClinicaApplication implements CommandLineRunner{
 		SpringApplication.run(ClinicaApplication.class, args);
 	}
 
+	
+	
 	@Override
 	public void run(String... args) throws Exception {
 		Usuario usuario1 = new Usuario("Matheus Melo4", "23568319887","matheuca@matheus.com.br", "1234", "AGENDADA", true, null, null);		
@@ -33,8 +36,6 @@ public class ClinicaApplication implements CommandLineRunner{
 		
 		//impressão do usuario no terminal.
 		List<Usuario> listaDeUsuario = usuarioRepositories.findAll();
-		listaDeUsuario.forEach(usuario -> System.out.println(usuario));
-	
+		listaDeUsuario.forEach(usuario -> System.out.println(usuario));	
 	}
-
 }

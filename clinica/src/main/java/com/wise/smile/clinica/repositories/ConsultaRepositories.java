@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ConsultaRepositories extends JpaRepository<Consulta, Integer> {
     
-    // Método para ajudar a validar a regra de conflito de horários para o mesmo dentista
+    // Metodo para ajudar a validar a regra de conflito de horarios para o dentista
     @Query("SELECT c FROM Consulta c WHERE c.dentista.id = :dentistaId AND " +
            "((c.dataInicio BETWEEN :inicio AND :fim) OR (c.dataEnding BETWEEN :inicio AND :fim))")
     List<Consulta> findConflitosHorario(@Param("dentistaId") Integer dentistaId, 

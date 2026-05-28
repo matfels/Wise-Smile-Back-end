@@ -47,4 +47,76 @@ public class Dentista {
             this.ativo = true;
         }
     }
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCro() {
+		return cro;
+	}
+
+	public void setCro(String cro) {
+		this.cro = cro;
+	}
+
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
+	}
+
+	public LocalDateTime getDataCriacao() {
+		return dataCriacao;
+	}
+
+	public void setDataCriacao(LocalDateTime dataCriacao) {
+		this.dataCriacao = dataCriacao;
+	}
+
+	public List<Especialidade> getEspecialidades() {
+		return especialidades;
+	}
+
+	public void setEspecialidades(List<Especialidade> especialidades) {
+		this.especialidades = especialidades;
+	}
+
+	@Override
+	public String toString() {
+		return "Dentista [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", email=" + email + ", cro=" + cro
+				+ ", ativo=" + ativo + ", dataCriacao=" + dataCriacao + ", especialidades=" + especialidades + "]";
+	}
+    
+    
 }

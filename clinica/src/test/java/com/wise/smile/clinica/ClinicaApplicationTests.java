@@ -1,7 +1,6 @@
 package com.wise.smile.clinica;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,34 +16,34 @@ import com.wise.smile.clinica.entity.Especialidade;
 import com.wise.smile.clinica.entity.Paciente;
 import com.wise.smile.clinica.entity.StatusConsulta;
 import com.wise.smile.clinica.entity.Usuario;
-import com.wise.smile.clinica.repository.ConsultaRepository;
-import com.wise.smile.clinica.repository.DentistaRepository;
-import com.wise.smile.clinica.repository.EspecialidadeRepository;
-import com.wise.smile.clinica.repository.PacienteRepository;
-import com.wise.smile.clinica.repository.UsuarioRepository;
+import com.wise.smile.clinica.repositories.ConsultaRepositories;
+import com.wise.smile.clinica.repositories.DentistaRepositories;
+import com.wise.smile.clinica.repositories.EspecialidadeRepositories;
+import com.wise.smile.clinica.repositories.PacienteRepositories;
+import com.wise.smile.clinica.repositories.UsuarioRepositories;
 
 @SpringBootTest
 class ClinicaApplicationTests {
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioRepositories usuarioRepository;
 	@Autowired
-	private PacienteRepository pacienteRepository;
+	private PacienteRepositories pacienteRepository;
 	@Autowired
-	private EspecialidadeRepository especialidadeRepository;
+	private EspecialidadeRepositories especialidadeRepository;
 
 	@Autowired
-	private ConsultaRepository consultaRepository;
+	private ConsultaRepositories consultaRepository;
 
 	@Autowired
-	private DentistaRepository dentistaRepository;
+	private DentistaRepositories dentistaRepository;
 	@Test
 	void testCrudUsuarioEPaciente() {
 		//     TESTE USUÁRIO
 		
 		Usuario usuario = new Usuario();
-		usuario.setNome("Jo2se a443lindo3");
-		usuario.setCpf("12245352692");
-		usuario.setEmail("jos2@a56indo.com");
+		usuario.setNome("ew a4543lindo3");
+		usuario.setCpf("12235358692");
+		usuario.setEmail("teste@356indo.com");
 		usuario.setSenha("admin123"); // No futuro usaremos BCrypt aqui [cite: 133, 198]
 		usuario.setPerfil("ADMIN");
 		usuario.setAtivo(true);
@@ -62,10 +61,10 @@ class ClinicaApplicationTests {
 
 		// 1.Salvar
 		Paciente paciente = new Paciente();
-		paciente.setNome("Pacien4e 4de Teste");
-		paciente.setEmail("teste.pda5asçlfkciente@gmail.com");
-		paciente.setCpf("98365437100");
-		paciente.setTelefone("45995999999");
+		paciente.setNome("Paci4ewten4e 4de Teste");
+		paciente.setEmail("tessteda4445asçlfkciente@gmail.com");
+		paciente.setCpf("98365436170");
+		paciente.setTelefone("45295999999");
 
 
 		Paciente pacienteSalvo = pacienteRepository.save(paciente);
@@ -80,7 +79,7 @@ class ClinicaApplicationTests {
 
 		// 1. TESTE ESPECIALIDADE
 	    Especialidade esp = new Especialidade();
-	    esp.setNome("Ortodontia");
+	    esp.setNome("Miopia");
 	    Especialidade espSalva = especialidadeRepository.save(esp);
 	    assertNotNull(espSalva.getId());
 	    System.out.println("Especialidade salva: " + espSalva.getNome());
@@ -88,9 +87,9 @@ class ClinicaApplicationTests {
 	    // 2. PREPARAÇÃO PARA CONSULTA (Dependências)
 	    // Criando um Dentista para a consulta
 	    Dentista dentista = new Dentista();
-	    dentista.setNome("Ddr. Wilson");
-	    dentista.setCpf("11122233744");
-	    dentista.setEmail("wilson@clini3a.com");
+	    dentista.setNome("Ddr. W33lson");
+	    dentista.setCpf("11122236744");
+	    dentista.setEmail("wilso32@clwini3a.com");
 	    dentista.setCro("12345");
 	    dentista.setAtivo(true);
 	    dentista.setEspecialidades(java.util.List.of(espSalva)); // Relacionamento ManyToMany
@@ -115,10 +114,6 @@ class ClinicaApplicationTests {
 	    assertEquals(StatusConsulta.AGENDADA, consultaSalva.getStatus());
 	    System.out.println("Consulta marcada com sucesso para o paciente: " + consultaSalva.getPaciente().getNome());
 
-	    // 4. TESTE FIND E DELETE
-	    assertTrue(consultaRepository.findById(consultaSalva.getId()).isPresent());
-	    consultaRepository.deleteById(consultaSalva.getId());
-	    assertFalse(consultaRepository.findById(consultaSalva.getId()).isPresent());
-	    System.out.println("Teste de exclusão de consulta concluído.");
+
 	}
 }

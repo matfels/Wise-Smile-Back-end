@@ -1,0 +1,38 @@
+package com.wise.smile.clinica.service;
+
+import com.wise.smile.clinica.entity.Dentista;
+import com.wise.smile.clinica.repositories.DentistaRepositories;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class DentistaService {
+
+    @Autowired
+    private DentistaRepositories dentistaRepository;
+
+    public Dentista registarDentista(Dentista dentista){
+        // Verifica se o CRO ja existe
+        if (dentistaRepository.findByCro(dentista.getCro()).isPresent()) {
+            throw new IllegalArgumentException("Erro: Já existe um dentista registado com este CRO.");
+        }
+        
+        //  Verifica se o CPF ja existe
+        if (dentistaRepository.findByCpf(dentista.getCpf()).isPresent()){
+            throw new IllegalArgumentException("Erro: Já existe um dentista registado com este CPF.");
+        }
+        
+        return dentistaRepository.save(dentista);
+    }
+
+    public List<Dentista> listarTodos() {
+        return dentistaRepository.findAll();
+    }
+
+    public Optional<Dentista> buscarPorId(Integer id)  {
+        return dentistaRepository.findById(id);
+    }
+}

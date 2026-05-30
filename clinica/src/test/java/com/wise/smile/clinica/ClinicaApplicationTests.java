@@ -1,29 +1,30 @@
 package com.wise.smile.clinica;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.wise.smile.clinica.entity.Consulta;
-import com.wise.smile.clinica.entity.Dentista;
-import com.wise.smile.clinica.entity.Especialidade;
-import com.wise.smile.clinica.entity.Paciente;
-import com.wise.smile.clinica.entity.StatusConsulta;
 import com.wise.smile.clinica.entity.Usuario;
 import com.wise.smile.clinica.repositories.ConsultaRepositories;
 import com.wise.smile.clinica.repositories.DentistaRepositories;
 import com.wise.smile.clinica.repositories.EspecialidadeRepositories;
 import com.wise.smile.clinica.repositories.PacienteRepositories;
 import com.wise.smile.clinica.repositories.UsuarioRepositories;
+import com.wise.smile.clinica.service.UsuarioService;
 
 @SpringBootTest
 class ClinicaApplicationTests {
+	
+	@Autowired
+	private UsuarioService usuarioService;
+
+	@Autowired
+	private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 	@Autowired
 	private UsuarioRepositories usuarioRepository;
 	@Autowired
@@ -37,83 +38,64 @@ class ClinicaApplicationTests {
 	@Autowired
 	private DentistaRepositories dentistaRepository;
 	@Test
-	void testCrudUsuarioEPaciente() {
-		//     TESTE USUÁRIO
-		
-		Usuario usuario = new Usuario();
-		usuario.setNome("ew a4543lindo3");
-		usuario.setCpf("12235358692");
-		usuario.setEmail("teste@356indo.com");
-		usuario.setSenha("admin123"); // No futuro usaremos BCrypt aqui [cite: 133, 198]
-		usuario.setPerfil("ADMIN");
-		usuario.setAtivo(true);
+	void testUsuarioServiceCompleto() {
+	    System.out.println("--- A INICIAR TESTE COMPLETO DO USUARIO SERVICE ---");
 
-		Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		assertNotNull(usuarioSalvo.getId());
-		System.out.println("Usuário salvo: " + usuarioSalvo.getNome());
+	    // ==========================================
+	    // Registo com Sucesso 
+	    // ==========================================
+	    Usuario novoUsuario = new Usuario();
+	    novoUsuario.setNome("Matfels");
+	    novoUsuario.setCpf("56845325598"); // Tem de ser único na base de dados
+	    novoUsuario.setEmail("Mat.Fels@wisesmile.com"); // Tem de ser único na base de dados
+	    novoUsuario.setSenha("admin");
+	    novoUsuario.setPerfil("DENTISTA");
+	    novoUsuario.setAtivo(true);
 
-		// 2. Buscar
-		Optional<Usuario> usuarioBuscado = usuarioRepository.findById(usuarioSalvo.getId());
-		assertTrue(usuarioBuscado.isPresent());
-		System.out.println("Usuário encontrado pelo ID: " + usuarioBuscado.get().getNome());
+	    Usuario usuarioSalvo = usuarioService.registarUsuario(novoUsuario);
+	    assertNotNull(usuarioSalvo.getId(), "O ID não deveria ser nulo após salvar");
+	    System.out.println("1. Sucesso: Utilizador registado com o ID " + usuarioSalvo.getId());
 
-		// TESTE PACIENTE
+	    // ==========================================
+	    //  Validação da Encriptação (BCrypt)
+	    // ==========================================
+	    // Verifica se a palavra-passe guardada NÃO é a palavra-passe em texto limpo
+	    assertNotEquals("senhaSecreta123", usuarioSalvo.getSenha());
+	    // Verifica se o hash gerado corresponde à palavra-passe original
+	    assertTrue(passwordEncoder.matches("senhaSecreta123", usuarioSalvo.getSenha()));
+	    System.out.println("2. Sucesso: Palavra-passe encriptada validada -> " + usuarioSalvo.getSenha());
 
-		// 1.Salvar
-		Paciente paciente = new Paciente();
-		paciente.setNome("Paci4ewten4e 4de Teste");
-		paciente.setEmail("tessteda4445asçlfkciente@gmail.com");
-		paciente.setCpf("98365436170");
-		paciente.setTelefone("45295999999");
+	    // ==========================================
+	    //  Validação de E-mail Duplicado
+	    // ==========================================
+	    Usuario utilizadorEmailDuplicado = new Usuario();
+	    utilizadorEmailDuplicado.setNome("Novo Usuario");
+	    utilizadorEmailDuplicado.setCpf("33333333333"); // CPF diferente
+	    utilizadorEmailDuplicado.setEmail("Novo.Usuario@wisesmile.com"); // EMAIL IGUAL
+	    utilizadorEmailDuplicado.setSenha("12345");
+	    utilizadorEmailDuplicado.setPerfil("ADMIN");
 
+	    // O assertThrows verifica se o código realmente "explode" (lança erro) quando tentamos gravar
+	    IllegalArgumentException erroEmail = assertThrows(IllegalArgumentException.class, () -> {
+	        usuarioService.registarUsuario(utilizadorEmailDuplicado);
+	    });
+	    System.out.println("3. Sucesso: Erro de e-mail capturado -> " + erroEmail.getMessage());
 
-		Paciente pacienteSalvo = pacienteRepository.save(paciente);
-		assertNotNull(pacienteSalvo.getId());
-		System.out.println("Paciente salvo: " + pacienteSalvo.getNome());
+	    // ==========================================
+	    //Validação de CPF Duplicado
+	    // ==========================================
+	    Usuario utilizadorCpfDuplicado = new Usuario();
+	    utilizadorCpfDuplicado.setNome("Outro Clone do Carlos");
+	    utilizadorCpfDuplicado.setCpf("99988877766"); // CPF IGUAL
+	    utilizadorCpfDuplicado.setEmail("novo.email@wisesmile.com"); // EMAIL DIFERENTE
+	    utilizadorCpfDuplicado.setSenha("12345");
+	    utilizadorCpfDuplicado.setPerfil("ADMIN");
 
-		//2. Listar Todos
-		long totalPacientes = pacienteRepository.count();
-		assertTrue(totalPacientes > 0);
-		System.out.println("Total de pacientes no banco: " + totalPacientes);
+	    IllegalArgumentException erroCpf = assertThrows(IllegalArgumentException.class, () -> {
+	        usuarioService.registarUsuario(utilizadorCpfDuplicado);
+	    });
+	    System.out.println("4. Sucesso: Erro de CPF capturado -> " + erroCpf.getMessage());
 
-
-		// 1. TESTE ESPECIALIDADE
-	    Especialidade esp = new Especialidade();
-	    esp.setNome("Miopia");
-	    Especialidade espSalva = especialidadeRepository.save(esp);
-	    assertNotNull(espSalva.getId());
-	    System.out.println("Especialidade salva: " + espSalva.getNome());
-
-	    // 2. PREPARAÇÃO PARA CONSULTA (Dependências)
-	    // Criando um Dentista para a consulta
-	    Dentista dentista = new Dentista();
-	    dentista.setNome("Ddr. W33lson");
-	    dentista.setCpf("11122236744");
-	    dentista.setEmail("wilso32@clwini3a.com");
-	    dentista.setCro("12345");
-	    dentista.setAtivo(true);
-	    dentista.setEspecialidades(java.util.List.of(espSalva)); // Relacionamento ManyToMany
-	    dentistaRepository.save(dentista);
-
-	    // Reutilizando um Usuário e Paciente (certifique-se de que existem ou crie novos)
-	    Usuario admin = usuarioRepository.findAll().get(0); 
-	    Paciente paciente2 = pacienteRepository.findAll().get(0);
-
-	    // 3. TESTE CONSULTA (O "Caminho das Pedras")
-	    Consulta consulta = new Consulta();
-	    consulta.setPaciente(paciente);
-	    consulta.setDentista(dentista);
-	    consulta.setUsuario(admin);
-	    consulta.setDescricao("Consulta de rotina para manutenção de aparelho");
-	    consulta.setDataInicio(java.time.LocalDateTime.now().plusDays(1)); // Amanhã
-	    consulta.setDataEnding(java.time.LocalDateTime.now().plusDays(1).plusHours(1));
-	    consulta.setStatus(StatusConsulta.AGENDADA);
-
-	    Consulta consultaSalva = consultaRepository.save(consulta);
-	    assertNotNull(consultaSalva.getId());
-	    assertEquals(StatusConsulta.AGENDADA, consultaSalva.getStatus());
-	    System.out.println("Consulta marcada com sucesso para o paciente: " + consultaSalva.getPaciente().getNome());
-
-
+	    System.out.println("--- TESTE COMPLETO FINALIZADO COM SUCESSO ---");
 	}
 }

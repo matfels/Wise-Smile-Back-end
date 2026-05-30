@@ -21,7 +21,7 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Usuario registarUsuario(Usuario usuario) {
+    public Usuario registarUsuario(Usuario usuario){
         
         // Regra 1: Verificar se o e-mail ja existe
         if ( usuarioRepository.findByEmail(usuario.getEmail()).isPresent() ) {
@@ -30,7 +30,7 @@ public class SecurityConfig {
 
         // Regra 2 Verificar se o CPF ja existe
         if (usuarioRepository.findByCpf(usuario.getCpf()).isPresent() ) {
-            throw new IllegalArgumentException("Erro: Este CPF já se encontra registado no sistema.");
+            throw new IllegalArgumentException( "Erro: Este CPF já se encontra registado no sistema.");
         }
 
         // Regra 3: criptografa a senha
@@ -38,7 +38,7 @@ public class SecurityConfig {
         String palavraPasseEncriptada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(palavraPasseEncriptada);
 
-        // Se passou em todas as regras, guarda o utilizador
+        // Se passar em todas as regras, guarda o utilizador
         return usuarioRepository.save(usuario) ;
     }
     

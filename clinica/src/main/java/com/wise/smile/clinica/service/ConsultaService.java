@@ -30,7 +30,7 @@ public class ConsultaService {
         }
 
         //Não permitir conflito de horário para odentista
-        // Utilizamos método e criamos no ConsultaRepositories
+        // Utilizamos metodo e criamos no ConsultaRepositories
         List<Consulta> conflitos = consultaRepository.findConflitosHorario(
                 consulta.getDentista().getId(),
                 consulta.getDataInicio(),

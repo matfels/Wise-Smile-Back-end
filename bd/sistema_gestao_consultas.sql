@@ -10,7 +10,7 @@ cpf varchar(14) unique not null,
 email varchar(100) unique not null,
 senha varchar(100) not null,
 perfil enum('AGENDADA','CANCELADA','FINALIZADA') not null default 'AGENDADA' not null,
-ativo boolean default(true),
+
 data_criacao timestamp default current_timestamp,
 ultimo_login timestamp
 
@@ -22,7 +22,7 @@ create table pacientes (
     email varchar(100) unique not null,
     cpf varchar(11) unique not null,
     telefone varchar(15),
-    ativo boolean default(true),
+    ativo boolean default true,
     data_criacao timestamp default current_timestamp
 );
 
@@ -32,7 +32,7 @@ create table dentista (
     cpf varchar(11) unique not null,
     email varchar(100) unique not null,
     cro varchar(6) not null,
-    ativo boolean default(true),
+    ativo boolean default true,
     data_criacao timestamp default current_timestamp
 );
 

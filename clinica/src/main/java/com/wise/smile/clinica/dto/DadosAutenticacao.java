@@ -1,5 +1,4 @@
 package com.wise.smile.clinica.dto;
 
-public class DadosAutenticacao {
-
+public record DadosAutenticacao(String email, String senha) {
 }

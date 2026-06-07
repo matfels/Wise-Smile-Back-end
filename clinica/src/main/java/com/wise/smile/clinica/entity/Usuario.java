@@ -1,20 +1,30 @@
 package com.wise.smile.clinica.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.Collection; // <-- IMPORTANTE: Faltava esse cara!
+import java.util.List;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.Data;
+	
 @Entity // Avisa o java que essa classe não e apenas um código e sim que representa uma tabela real na base de dados.
 @Table(name = "usuarios")
 @Data
 
 
 
-public class Usuario {
+public class Usuario implements UserDetails {
 
-	// Criei um construtor vazio para poder trazer os dados para a listano (ClinicaAplicattion).
-	public Usuario() {
-	}
 	
 	
 	public Usuario(String nome, String cpf, String email, String senha, String perfil, Boolean ativo,
@@ -74,6 +84,47 @@ public class Usuario {
         if (this.ativo == null) {
             this.ativo = true;
         }
+    }
+
+
+//------------------------
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if ("ADMIN".equals(this.perfil)) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo;
     }
 
 
@@ -164,9 +215,7 @@ public class Usuario {
 
 	public void setUltimoLogin(LocalDateTime ultimoLogin) {
 		this.ultimoLogin = ultimoLogin;
-	}
-    
-    
+	}   
     
     
 }

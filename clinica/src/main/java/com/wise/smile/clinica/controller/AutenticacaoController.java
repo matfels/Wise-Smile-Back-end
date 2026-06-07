@@ -24,6 +24,7 @@ public class AutenticacaoController {
     @Autowired
     private TokenService tokenService; // A nossa "Fábrica de Crachás"
 
+    
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody DadosAutenticacao dados) {
         
@@ -36,6 +37,7 @@ public class AutenticacaoController {
         // senha está correta vamos gerar o Token JWT
         var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
 
+        
         //Devolvemos o Token dentro do nosso envelope de resposta
         return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
     }

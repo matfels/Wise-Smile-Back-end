@@ -23,8 +23,11 @@ import lombok.Data;
 
 
 
-public class Usuario implements UserDetails {
 
+public class Usuario implements UserDetails {
+	
+	public Usuario() {
+    }
 	
 	
 	public Usuario(String nome, String cpf, String email, String senha, String perfil, Boolean ativo,

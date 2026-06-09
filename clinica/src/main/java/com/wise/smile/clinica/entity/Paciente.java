@@ -72,6 +72,7 @@ public class Paciente {
 	public LocalDateTime getDataCriacao() {
 		return dataCriacao;
 	}
+	private Boolean ativo;
 
 	public void setDataCriacao(LocalDateTime dataCriacao) {
 		this.dataCriacao = dataCriacao;
@@ -88,6 +89,10 @@ public class Paciente {
 	@PrePersist
     public void prePersist() {
         this.dataCriacao = LocalDateTime.now();
+    }
+	
+	public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
     
 }

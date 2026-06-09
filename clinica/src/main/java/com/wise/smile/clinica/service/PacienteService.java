@@ -36,11 +36,15 @@ public class PacienteService{
         return pacienteRepository.findById(id);
     }
 
-    public void deletarPaciente(Integer id)  {
-        pacienteRepository.deleteById(id);
+    public void deletarPaciente(Integer id) {
+        // Busca o paciente, muda o status e salva por cima
+        var paciente = pacienteRepository.findById(id).get();
+        paciente.setAtivo(false);
+        pacienteRepository.save(paciente);
     }
+    
+    
     public Paciente atualizarPaciente(Paciente paciente) {
-
         return pacienteRepository.save(paciente);
     }
 }

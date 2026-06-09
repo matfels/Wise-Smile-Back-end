@@ -35,4 +35,15 @@ public class DentistaService {
     public Optional<Dentista> buscarPorId(Integer id)  {
         return dentistaRepository.findById(id);
     }
+    
+    public void deletarDentista(Integer id) {
+        // Busca o dentista, muda o status e salva por cima (Exclusão Lógica)
+        var dentista = dentistaRepository.findById(id).get();
+        dentista.setAtivo(false);
+        dentistaRepository.save(dentista);
+    }
+    
+    public Dentista atualizarDentista(Dentista dentista) {
+        return dentistaRepository.save(dentista);
+    }
 }

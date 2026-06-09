@@ -39,4 +39,18 @@ public class DentistaController{
         return dentista.map(ResponseEntity::ok)
                        .orElseGet(()-> ResponseEntity.notFound().build()) ;
     }
+    
+ // Rota Put Atualiza um dentista 
+    @PutMapping
+    public ResponseEntity<Dentista> atualizarDentista(@RequestBody Dentista dentista) {
+        Dentista dentistaAtualizado =  dentistaService.atualizarDentista(dentista);
+        return ResponseEntity.ok(dentistaAtualizado);
+    }
+
+    // Rota Delete : Remove um dentista (Exclusão Lógica)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarDentista(@PathVariable Integer id )  {
+        dentistaService.deletarDentista(id);
+        return ResponseEntity.noContent().build() ; // Devolve 204 (No Content)
+    }
 }

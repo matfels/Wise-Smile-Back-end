@@ -1,12 +1,14 @@
 package com.wise.smile.clinica.service;
 
-import com.wise.smile.clinica.entity.Usuario;
-import com.wise.smile.clinica.repositories.UsuarioRepositories;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.wise.smile.clinica.entity.Usuario;
+import com.wise.smile.clinica.repositories.UsuarioRepositories;
 
 @Service
 public class UsuarioService {
@@ -19,27 +21,49 @@ public class UsuarioService {
 
     public Usuario registarUsuario(Usuario usuario) {
         
-        // Regra 1: Verificar se o e-mail já existe
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+        // Verifica se o e-mail já existe
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent())  {
             throw new IllegalArgumentException("Erro: Este e-mail já está em uso por outro utilizador.");
         }
 
-        // Regra 2: Verificar se o CPF
+        
+        // Verificaa se o CPF existe
         if (usuarioRepository.findByCpf(usuario.getCpf()).isPresent()) {
             throw new IllegalArgumentException("Erro: Este CPF já se encontra registado no sistema.");
         }
 
-        // Regra 3: Criptografa a palavra-passe antes de guardar
+        // Criptografa a senha antes de guardar
         // O BCrypt transforma "admin123" string ilegível
         String palavraPasseEncriptada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(palavraPasseEncriptada);
 
         // Se passar em todas as regras, guarda o utilizador
         return usuarioRepository.save(usuario);
+    
     }
     
     // Método auxiliar para buscar um utilizador por ID
     public Optional<Usuario> buscarPorId(Integer id) {
         return usuarioRepository.findById(id);
     }
+    
+    //listar todos os usuários
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
+    }
+
+    //  atualizar um usuário
+    public Usuario atualizarUsuario(Usuario usuario)  {
+        // Atenção de Segurança: Se for atualizar a senha nesta rota, 
+        // ela precisaria passar pelo passwordEncoder.encode() novamente.
+        return usuarioRepository.save(usuario);
+    }
+
+    //Inativar um usuário (Exclusão Lógica)
+    public void deletarUsuario(Integer id) {
+        var usuario = usuarioRepository.findById(id).get();
+        usuario.setAtivo(false); // Quando ativo for false, o Spring Security bloqueia o login dele!
+        usuarioRepository.save(usuario);
+    }
+
 }

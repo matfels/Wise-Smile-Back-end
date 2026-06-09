@@ -1,4 +1,4 @@
-package com.wise.smile.clinica.controller;
+	package com.wise.smile.clinica.controller;
 
 import com.wise.smile.clinica.entity.Paciente;
 import com.wise.smile.clinica.service.PacienteService;
@@ -53,5 +53,12 @@ public class PacienteController  {
     public ResponseEntity<Void> deletarPaciente(@PathVariable Integer id ) {
         pacienteService.deletarPaciente(id);
         return ResponseEntity.noContent().build(); // Devolve 204 (No Content) significando que foi apagado
+    }
+    
+    // Rota Put Atualiza um paciente 
+    @PutMapping
+    public ResponseEntity<Paciente> atualizarPaciente(@RequestBody Paciente paciente) {
+        Paciente pacienteAtualizado = pacienteService.atualizarPaciente(paciente);
+        return ResponseEntity.ok(pacienteAtualizado);
     }
 }

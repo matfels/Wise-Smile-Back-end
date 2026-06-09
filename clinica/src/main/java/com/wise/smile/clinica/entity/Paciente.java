@@ -84,7 +84,7 @@ public class Paciente {
 	}
 	
 	
-	//Insere a data de criação
+	//Insere a data de criação do paciente 
 	@PrePersist
     public void prePersist() {
         this.dataCriacao = LocalDateTime.now();

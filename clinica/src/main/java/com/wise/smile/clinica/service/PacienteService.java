@@ -39,4 +39,8 @@ public class PacienteService{
     public void deletarPaciente(Integer id)  {
         pacienteRepository.deleteById(id);
     }
+    public Paciente atualizarPaciente(Paciente paciente) {
+
+        return pacienteRepository.save(paciente);
+    }
 }

@@ -36,5 +36,22 @@ public class Especialidade {
 		return "Especialidade [id=" + id + ", nome=" + nome + "]";
 	}
 
+	@Column(columnDefinition = "boolean default true")
+    private Boolean ativo;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.ativo == null) {
+            this.ativo = true;
+        }
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
     
 }

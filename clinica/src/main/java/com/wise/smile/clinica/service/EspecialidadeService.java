@@ -28,4 +28,15 @@ public class EspecialidadeService {
         return especialidadeRepository.findById(id);
     }
     
+    
+
+    public Especialidade atualizar(Especialidade especialidade) {
+        return especialidadeRepository.save(especialidade);
+    }
+
+    public void deletar(Integer id) {
+        var especialidade = especialidadeRepository.findById(id).get();
+        especialidade.setAtivo(false);
+        especialidadeRepository.save(especialidade);
+    }
 }

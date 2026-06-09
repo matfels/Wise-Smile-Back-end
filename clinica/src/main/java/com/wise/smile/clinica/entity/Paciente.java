@@ -82,5 +82,12 @@ public class Paciente {
 		return "Paciente [id=" + id + ", nome=" + nome + ", email=" + email + ", cpf=" + cpf + ", telefone=" + telefone
 				+ ", dataCriacao=" + dataCriacao + "]";
 	}
+	
+	
+	//Insere a data de criação
+	@PrePersist
+    public void prePersist() {
+        this.dataCriacao = LocalDateTime.now();
+    }
     
 }

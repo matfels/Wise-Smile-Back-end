@@ -25,7 +25,6 @@ import lombok.Data;
 
 
 public class Usuario implements UserDetails {
-	
 	public Usuario() {
     }
 	

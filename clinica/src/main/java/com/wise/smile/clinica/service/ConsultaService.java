@@ -62,5 +62,38 @@ public class ConsultaService {
         consulta.setMotivoCancelamento(motivoCancelamento);
         
         return consultaRepository.save(consulta);
+        
+        
     }
+    public List<Consulta> listarTodas() {
+        return consultaRepository.findAll();
+    }
+
+    public java.util.Optional<Consulta> buscarPorId(Integer id) {
+        return consultaRepository.findById(id);
+    }
+
+    // Método para atualizar (reagendar) uma consulta
+    public Consulta atualizarConsulta(Consulta consulta) {
+        if (consulta.getDataInicio().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Erro: Não é possível reagendar para o passado.");
+        }
+        if (consulta.getDataEnding().isBefore(consulta.getDataInicio()) || consulta.getDataEnding().isEqual(consulta.getDataInicio())) {
+            throw new IllegalArgumentException("Erro: O horário de término deve ser posterior ao horário de início.");
+        }
+        
+        List<Consulta> conflitos = consultaRepository.findConflitosHorario(
+                consulta.getDentista().getId(),
+                consulta.getDataInicio(),
+                consulta.getDataEnding()
+        );
+        
+        
+        boolean conflitoReal = conflitos.stream().anyMatch(c -> !c.getId().equals(consulta.getId()));
+        if (conflitoReal) {
+            throw new IllegalArgumentException("Erro: O dentista selecionado já possui outra consulta marcada para este horário.");
+        }
+        return consultaRepository.save(consulta);
+    }
+    
 }

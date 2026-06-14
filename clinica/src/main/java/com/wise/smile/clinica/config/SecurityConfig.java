@@ -11,6 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 @Configuration
 
@@ -22,7 +26,9 @@ public class SecurityConfig {
 	// Nao pede a senha ao iniciar o spring
 	@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable())
+        return http
+        		.cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- ÚNICA LINHA ADICIONADA AQUI
+        		.csrf(csrf -> csrf.disable())
                 // Avisa ao Spring que a nossa autenticação será via Token (Stateless)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
@@ -36,10 +42,19 @@ public class SecurityConfig {
                 .build();
     }
 
-    
+	// BLOCO ADICIONADO: Configuração para liberar a porta do Angular
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        config.setAllowedMethods(Arrays.asList("*")); 
+        config.setAllowedHeaders(Arrays.asList("*")); 
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
-    
-    // @Bean diz ao Spring para deixar este encriptador pronto (injetado) noutras partes do código
     @Bean
     public PasswordEncoder passwordEncoder() {
     	return new BCryptPasswordEncoder();

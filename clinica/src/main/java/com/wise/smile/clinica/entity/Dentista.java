@@ -29,8 +29,8 @@ public class Dentista {
     @Column(nullable = false, length = 6)
     private String cro;
 
-    @Column(columnDefinition = "boolean default true")
-    private Boolean ativo;
+    @Column(name = "ativo", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Boolean ativo = true;
 
     @Column(name = "data_criacao", updatable = false)
     private LocalDateTime dataCriacao;
@@ -120,6 +120,7 @@ public class Dentista {
 		return "Dentista [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", email=" + email + ", cro=" + cro
 				+ ", ativo=" + ativo + ", dataCriacao=" + dataCriacao + ", especialidades=" + especialidades + "]";
 	}
+	
     
 	
     

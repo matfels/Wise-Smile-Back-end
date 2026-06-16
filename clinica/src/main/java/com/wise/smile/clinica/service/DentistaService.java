@@ -46,7 +46,14 @@ public class DentistaService {
     public Dentista atualizarDentista(Dentista dentista) {
         return dentistaRepository.save(dentista);
     }
+    
     public List<Dentista> buscarPorEspecialidadeId(Integer idEspecialidade) {
         return dentistaRepository.buscarPorEspecialidadeId(idEspecialidade);
+    }
+    public void ativarDentista(Integer id) {
+        // Busca o dentista, muda o status para verdadeiro (true) e salva por cima
+        var dentista = dentistaRepository.findById(id).get();
+        dentista.setAtivo(true);
+        dentistaRepository.save(dentista);
     }
 }

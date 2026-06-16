@@ -75,6 +75,14 @@ public class DentistaController{
         return ResponseEntity.ok(dentistasFiltrados);
     }
     
+    // Rota PUT para Atualizar
+    @PutMapping("/{id}")
+    public ResponseEntity<Dentista> atualizar(@PathVariable Integer id, @RequestBody Dentista dentistaAtualizado) {
+        dentistaAtualizado.setId(id);
+        // Ajuste "salvar" ou "atualizarDentista" conforme estiver no seu DentistaService.java
+        Dentista salvo = dentistaService.atualizarDentista(dentistaAtualizado);
+        return ResponseEntity.ok(salvo);
+    }
     
     
 }

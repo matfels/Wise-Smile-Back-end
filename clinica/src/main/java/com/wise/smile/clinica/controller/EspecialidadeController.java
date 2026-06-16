@@ -48,4 +48,10 @@ public class EspecialidadeController {
         especialidadeService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @PutMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@PathVariable Integer id) {
+        especialidadeService.ativarEspecialidade(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -36,8 +36,8 @@ public class Especialidade {
 		return "Especialidade [id=" + id + ", nome=" + nome + "]";
 	}
 
-	@Column(columnDefinition = "boolean default true")
-    private Boolean ativo;
+	@Column(name = "ativo", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Boolean ativo = true;
 
     @PrePersist
     protected void onCreate() {

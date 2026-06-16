@@ -39,4 +39,9 @@ public class EspecialidadeService {
         especialidade.setAtivo(false);
         especialidadeRepository.save(especialidade);
     }
+    public void ativarEspecialidade(Integer id) {
+        var especialidade = especialidadeRepository.findById(id).get();
+        especialidade.setAtivo(true);
+        especialidadeRepository.save(especialidade);
+    }
 }

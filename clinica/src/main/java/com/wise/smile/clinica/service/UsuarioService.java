@@ -65,5 +65,18 @@ public class UsuarioService {
         usuario.setAtivo(false); // Quando ativo for false, o Spring Security bloqueia o login dele!
         usuarioRepository.save(usuario);
     }
+    
+ // Método para reativar o usuário no banco de dados
+    public void ativarUsuario(Integer id) {
+        // 1. Busca o usuário pelo ID
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        
+        // 2. Muda o status dele para TRUE (Ativo)
+        usuario.setAtivo(true);
+        
+        // 3. Salva a alteração no banco
+        usuarioRepository.save(usuario);
+    }
 
 }

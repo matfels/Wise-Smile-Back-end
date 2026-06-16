@@ -1,14 +1,22 @@
-	package com.wise.smile.clinica.controller;
-
-import com.wise.smile.clinica.entity.Paciente;
-import com.wise.smile.clinica.service.PacienteService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+package com.wise.smile.clinica.controller;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.wise.smile.clinica.entity.Paciente;
+import com.wise.smile.clinica.service.PacienteService;
 
 // dizem ao Spring que esta classe é um Roteador Web / API REST
 @RestController
@@ -67,4 +75,13 @@ public class PacienteController  {
         Paciente pacienteAtualizado = pacienteService.atualizarPaciente(paciente);
         return ResponseEntity.ok(pacienteAtualizado);
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Paciente> atualizar(@PathVariable Integer id, @RequestBody Paciente pacienteAtualizado) {
+        // Garante que o ID do corpo da requisição é o mesmo da URL
+        pacienteAtualizado.setId(id); 
+        Paciente salvo = pacienteService.atualizarPaciente(pacienteAtualizado);
+        return ResponseEntity.ok(salvo);
+    }
+    
 }

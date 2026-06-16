@@ -47,4 +47,11 @@ public class PacienteService{
     public Paciente atualizarPaciente(Paciente paciente) {
         return pacienteRepository.save(paciente);
     }
+    
+    public void ativar(Integer id) {
+        // Busca o paciente, muda o status para verdadeiro (true) e salva por cima
+        Paciente paciente = pacienteRepository.findById(id).get();
+        paciente.setAtivo(true);
+        pacienteRepository.save(paciente);
+    }
 }

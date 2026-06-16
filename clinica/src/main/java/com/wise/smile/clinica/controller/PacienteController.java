@@ -55,6 +55,12 @@ public class PacienteController  {
         return ResponseEntity.noContent().build(); // Devolve 204 (No Content) significando que foi apagado
     }
     
+    @PutMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@PathVariable Integer id) {
+        pacienteService.ativar(id);
+        return ResponseEntity.noContent().build();
+    }
+    
     // Rota Put Atualiza um paciente 
     @PutMapping
     public ResponseEntity<Paciente> atualizarPaciente(@RequestBody Paciente paciente) {

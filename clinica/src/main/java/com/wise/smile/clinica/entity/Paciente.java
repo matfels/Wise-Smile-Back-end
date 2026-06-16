@@ -1,8 +1,7 @@
 package com.wise.smile.clinica.entity;
+
 import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,72 +36,78 @@ public class Paciente {
     @Column(name = "data_criacao", updatable = false)
     private LocalDateTime dataCriacao;
 
+    // AQUI ESTÁ A CORREÇÃO: Variável com o valor padrão true
+    @Column(name = "ativo")
+    private Boolean ativo = true;
 
-	public Integer getId() {
-		return id;
-	}
+    // --- GETTERS E SETTERS ---
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public String getCpf() {
-		return cpf;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
+    public String getCpf() {
+        return cpf;
+    }
 
-	public String getTelefone() {
-		return telefone;
-	}
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
 
-	public void setTelefone(String telefone) {
-		this.telefone = telefone;
-	}
+    public String getTelefone() {
+        return telefone;
+    }
 
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 
-	public LocalDateTime getDataCriacao() {
-		return dataCriacao;
-	}
-	private Boolean ativo;
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
 
-	public void setDataCriacao(LocalDateTime dataCriacao) {
-		this.dataCriacao = dataCriacao;
-	}
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 
-	@Override
-	public String toString() {
-		return "Paciente [id=" + id + ", nome=" + nome + ", email=" + email + ", cpf=" + cpf + ", telefone=" + telefone
-				+ ", dataCriacao=" + dataCriacao + "]";
-	}
-	
-	
-	//Insere a data de criação do paciente 
-	@PrePersist
+    // AQUI ESTÁ A CORREÇÃO: O Getter que envia o dado para o Angular
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    @Override
+    public String toString() {
+        return "Paciente [id=" + id + ", nome=" + nome + ", email=" + email + ", cpf=" + cpf + ", telefone=" + telefone
+                + ", dataCriacao=" + dataCriacao + ", ativo=" + ativo + "]";
+    }
+    
+    // Insere a data de criação do paciente 
+    @PrePersist
     public void prePersist() {
         this.dataCriacao = LocalDateTime.now();
     }
-	
-	public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-    
 }

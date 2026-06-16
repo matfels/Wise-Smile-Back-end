@@ -31,15 +31,24 @@ public class AutenticacaoController {
     public ResponseEntity efetuarLogin(@RequestBody DadosAutenticacao dados) {
         
         try {
-            // Pega no email e senha do envelope e empacota no formato que o Spring entende
-        	var authenticationToken = new UsernamePasswordAuthenticationToken(dados.email(), dados.senha());
-        	//Pega AutenticacaoService, procurar no banco e verificar o BCrypt
-        	AuthenticationManager manager = configuration.getAuthenticationManager();
+            //Pega no email e senha do envelope e empacota no formato que o Spring entende
+            var authenticationToken = new UsernamePasswordAuthenticationToken(dados.email(), dados.senha());
+            
+            
+            // Pega AutenticacaoService, procurar no banco e verificar o BCrypt 
+            AuthenticationManager manager = configuration.getAuthenticationManager() ;
             var authentication = manager.authenticate(authenticationToken);
-            // senha está correta vamos gerar o Token JWT
-            var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
-            //dEVOLVE o Token dentro do envelope de resposta
-            return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+            
+            // iSOLAMOS O USUÁRIO pegando o objeto inteiro do usuário autenticado
+            Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+            
+            // GERANDO  O TOKEN
+            var tokenJWT = tokenService.gerarToken(usuarioLogado);
+            
+            
+            //  Enviamos o Token E o ID usando o getId()
+            return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, usuarioLogado.getId()));
+            
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Acesso Negado: Usuário ou senha incorretos.");
         }

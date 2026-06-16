@@ -1,5 +1,5 @@
 package com.wise.smile.clinica.service;
-
+import java.util.List;
 import com.wise.smile.clinica.entity.Dentista;
 import com.wise.smile.clinica.repositories.DentistaRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +45,8 @@ public class DentistaService {
     
     public Dentista atualizarDentista(Dentista dentista) {
         return dentistaRepository.save(dentista);
+    }
+    public List<Dentista> buscarPorEspecialidadeId(Integer idEspecialidade) {
+        return dentistaRepository.buscarPorEspecialidadeId(idEspecialidade);
     }
 }

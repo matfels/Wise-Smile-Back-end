@@ -1,4 +1,5 @@
 package com.wise.smile.clinica.dto;
 
-public record DadosTokenJWT(String token) {
+//retorna o tiken e o ID do usuario
+public record DadosTokenJWT(String token, Integer idUsuario) {
 }

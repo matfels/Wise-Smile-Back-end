@@ -61,12 +61,20 @@ public class DentistaController{
         dentistaService.deletarDentista(id);
         return ResponseEntity.noContent().build() ; // Devolve 204 (No Content)
     }
+
+ // Rota Put: Reativa um dentista (Volta o status para true)
+    @PutMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativarDentista(@PathVariable Integer id) {
+        dentistaService.ativarDentista(id);
+        return ResponseEntity.noContent().build();
+    }
     
     @GetMapping("/especialidade/{id}")
     public ResponseEntity<List<Dentista>> listarPorEspecialidade(@PathVariable Integer id) {
         List<Dentista> dentistasFiltrados = dentistaService.buscarPorEspecialidadeId(id);
         return ResponseEntity.ok(dentistasFiltrados);
     }
+    
     
     
 }

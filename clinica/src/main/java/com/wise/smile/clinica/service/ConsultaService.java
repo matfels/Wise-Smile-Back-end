@@ -4,12 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.wise.smile.clinica.entity.Consulta;
 import com.wise.smile.clinica.entity.StatusConsulta;
 import com.wise.smile.clinica.repositories.ConsultaRepositories;
-
+import org.springframework.scheduling.annotation.Scheduled;
 @Service
 public class ConsultaService {
 
@@ -94,6 +95,17 @@ public class ConsultaService {
             throw new IllegalArgumentException("Erro: O dentista selecionado já possui outra consulta marcada para este horário.");
         }
         return consultaRepository.save(consulta);
+    }
+ 
+    
+    // Esta rotina vai rodar automaticamente a cada 1 hora (3600000 milissegundos)
+    // Para testar agora, você pode trocar por 10000 (10 segundos)
+    
+    @Scheduled(fixedDelay = 3600000) 
+    public void rotinaFinalizarConsultas() {
+        // Dispara o update no banco de dados passando a data e hora exatas deste segundo
+        consultaRepository.finalizarConsultasPassadas(LocalDateTime.now());
+        System.out.println("Rotina executada: Consultas antigas foram marcadas como FINALIZADA.");
     }
     
 }

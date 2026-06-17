@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.wise.smile.clinica.entity.Consulta;
 import com.wise.smile.clinica.entity.Dentista;
+import com.wise.smile.clinica.entity.Paciente;
 import com.wise.smile.clinica.entity.StatusConsulta;
 import com.wise.smile.clinica.entity.Usuario;
 import com.wise.smile.clinica.repositories.ConsultaRepositories;
 import com.wise.smile.clinica.repositories.DentistaRepositories;
+import com.wise.smile.clinica.repositories.PacienteRepositories;
+
 @Service
 public class ConsultaService {
 
@@ -21,6 +24,9 @@ public class ConsultaService {
 
     @Autowired
     private DentistaRepositories dentistaRepository;
+
+    @Autowired
+    private PacienteRepositories pacienteRepository;
     
     // Marcar uma nova consulta
     public Consulta agendarConsulta(Consulta consulta) {
@@ -88,9 +94,11 @@ public class ConsultaService {
             return consultaRepository.findByDentistaId(dentista.getId());
         }
         
-        
-        //   Se for perfil Comum (ex: recepcionista), pode ver as consultas que ele mesmo registrou
-        return consultaRepository.findByUsuarioId(usuarioLogado.getId());
+        // Se for perfil COMUM, busca o paciente pelo e-mail e retorna as consultas vinculadas
+        Paciente paciente = pacienteRepository.findByEmail(usuarioLogado.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("Paciente não encontrado para este usuário."));
+            
+        return consultaRepository.findByPacienteId(paciente.getId());
     
     }
     public java.util.Optional<Consulta> buscarPorId(Integer id) {

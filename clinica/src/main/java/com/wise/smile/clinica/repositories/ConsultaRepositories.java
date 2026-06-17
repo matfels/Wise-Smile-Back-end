@@ -16,7 +16,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface ConsultaRepositories extends JpaRepository<Consulta, Integer> {
     
-	
+
 	
     // Metodo para ajudar a validar a regra de conflito de horarios para o dentista
     @Query("SELECT c FROM Consulta c WHERE c.dentista.id = :dentistaId AND " +
@@ -31,5 +31,6 @@ public interface ConsultaRepositories extends JpaRepository<Consulta, Integer> {
     void finalizarConsultasPassadas(@Param("agora") LocalDateTime agora);
     
     List<Consulta> findByUsuarioId(Integer usuarioId);
-    List<Consulta> findByDentistaId(Integer idDentista); //
+    List<Consulta> findByDentistaId(Integer idDentista);
+    List<Consulta> findByPacienteId(Integer idPaciente);
 }

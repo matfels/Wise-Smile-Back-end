@@ -29,4 +29,7 @@ public interface ConsultaRepositories extends JpaRepository<Consulta, Integer> {
     @Transactional
     @Query("UPDATE Consulta c SET c.status = 'FINALIZADA' WHERE c.status = 'AGENDADA' AND c.dataInicio < :agora")
     void finalizarConsultasPassadas(@Param("agora") LocalDateTime agora);
+    
+    List<Consulta> findByUsuarioId(Integer usuarioId);
+    List<Consulta> findByDentistaId(Integer idDentista); //
 }

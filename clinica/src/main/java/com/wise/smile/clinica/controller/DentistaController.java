@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,14 +26,20 @@ public class DentistaController{
     @Autowired
     private DentistaService dentistaService;
     
-    
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<?> registarDentista( @RequestBody Dentista dentista ){
+    public ResponseEntity<?> registarDentista(@RequestBody Dentista dentista) {
         try {
+            // Log para ver o que chegou no Java
+            System.out.println("Dentista recebido: " + dentista);
+            System.out.println("Especialidades: " + dentista.getEspecialidades());
+            
             Dentista dentistaSalvo = dentistaService.registarDentista(dentista);
             return ResponseEntity.status(HttpStatus.CREATED).body(dentistaSalvo);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage() );
+        } catch (Exception e) {
+            // Mostra o erro real no terminal do Spring Boot
+            e.printStackTrace(); 
+            return ResponseEntity.badRequest().body("Erro no servidor: " + e.getMessage());
         }
     }
 
@@ -49,6 +56,7 @@ public class DentistaController{
     }
     
  // Rota Put Atualiza um dentista 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Dentista> atualizarDentista(@RequestBody Dentista dentista) {
         Dentista dentistaAtualizado =  dentistaService.atualizarDentista(dentista);
@@ -56,6 +64,7 @@ public class DentistaController{
     }
 
     // Rota Delete : Remove um dentista (Exclusão Lógica)
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarDentista(@PathVariable Integer id )  {
         dentistaService.deletarDentista(id);
@@ -63,6 +72,7 @@ public class DentistaController{
     }
 
  // Rota Put: Reativa um dentista (Volta o status para true)
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativarDentista(@PathVariable Integer id) {
         dentistaService.ativarDentista(id);
@@ -76,6 +86,7 @@ public class DentistaController{
     }
     
     // Rota PUT para Atualizar
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Dentista> atualizar(@PathVariable Integer id, @RequestBody Dentista dentistaAtualizado) {
         dentistaAtualizado.setId(id);

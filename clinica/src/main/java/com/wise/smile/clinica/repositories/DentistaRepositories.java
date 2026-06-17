@@ -14,12 +14,15 @@ import com.wise.smile.clinica.entity.Dentista;
 public interface DentistaRepositories extends JpaRepository<Dentista, Integer> {
     Optional<Dentista> findByCpf(String cpf);
     Optional<Dentista> findByCro(String cro);   
-    
+    Optional<Dentista> findByEmail(String email);
     
     @Query(value = "SELECT DISTINCT d.* FROM dentista d INNER JOIN dentista_especialidade de ON d.id = de.id_dentista WHERE de.id_especialidade = :idEspecialidade", nativeQuery = true)
     List<Dentista> buscarPorEspecialidadeId(@Param("idEspecialidade") Integer idEspecialidade);
+   
     
 }
+
+
 
 
 

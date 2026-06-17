@@ -8,15 +8,20 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.wise.smile.clinica.entity.Consulta;
+import com.wise.smile.clinica.entity.Dentista;
 import com.wise.smile.clinica.entity.StatusConsulta;
+import com.wise.smile.clinica.entity.Usuario;
 import com.wise.smile.clinica.repositories.ConsultaRepositories;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.wise.smile.clinica.repositories.DentistaRepositories;
 @Service
 public class ConsultaService {
 
     @Autowired
     private ConsultaRepositories consultaRepository;
 
+    @Autowired
+    private DentistaRepositories dentistaRepository;
+    
     // Marcar uma nova consulta
     public Consulta agendarConsulta(Consulta consulta) {
         
@@ -66,19 +71,41 @@ public class ConsultaService {
         
         
     }
-    public List<Consulta> listarTodas() {
-        return consultaRepository.findAll();
+    
+    public List<Consulta> listarTodas(Usuario usuarioLogado) {
+        
+        // Se for ADMIN, traz absolutamente todas as consultas do sistema
+        if ("ADMIN".equalsIgnoreCase(usuarioLogado.getPerfil())) {
+            return consultaRepository.findAll();
+        }
+        
+        
+        //Se for DENTISTA, faz o vínculo inteligente pelo E-mail
+        if ("DENTISTA".equalsIgnoreCase(usuarioLogado.getPerfil())) {
+            Dentista dentista = dentistaRepository.findByEmail(usuarioLogado.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Nenhum perfil de Dentista encontrado com o e-mail deste usuário."));
+            
+            return consultaRepository.findByDentistaId(dentista.getId());
+        }
+        
+        
+        //   Se for perfil Comum (ex: recepcionista), pode ver as consultas que ele mesmo registrou
+        return consultaRepository.findByUsuarioId(usuarioLogado.getId());
+    
     }
-
     public java.util.Optional<Consulta> buscarPorId(Integer id) {
         return consultaRepository.findById(id);
+ 
     }
 
-    // Método para atualizar (reagendar) uma consulta
+    //Método para atualizar (reagendar) uma consulta
     public Consulta atualizarConsulta(Consulta consulta) {
         if (consulta.getDataInicio().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Erro: Não é possível reagendar para o passado.");
+    
         }
+        
+        
         if (consulta.getDataEnding().isBefore(consulta.getDataInicio()) || consulta.getDataEnding().isEqual(consulta.getDataInicio())) {
             throw new IllegalArgumentException("Erro: O horário de término deve ser posterior ao horário de início.");
         }
@@ -98,7 +125,7 @@ public class ConsultaService {
     }
  
     
-    // Esta rotina vai rodar automaticamente a cada 1 hora (3600000 milissegundos)
+    // A  rotina vai rodar automaticamente a cada 1 hora (3600000 milissegundos)
     // Para testar agora, você pode trocar por 10000 (10 segundos)
     
     @Scheduled(fixedDelay = 3600000) 

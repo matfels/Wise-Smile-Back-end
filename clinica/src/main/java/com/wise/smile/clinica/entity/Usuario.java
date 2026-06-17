@@ -92,7 +92,7 @@ public class Usuario implements UserDetails {
 //------------------------
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if ("ADMIN".equals(this.perfil)) {
+    	if ("ADMIN".equalsIgnoreCase(this.perfil)) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));

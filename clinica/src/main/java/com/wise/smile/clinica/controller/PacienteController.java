@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +26,9 @@ public class PacienteController  {
 
     @Autowired
     private PacienteService pacienteService;
-
+    
     // Rota Usada para CRIAR um novo paciente
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> registarPaciente( @RequestBody Paciente paciente) {
         try {
@@ -57,12 +59,13 @@ public class PacienteController  {
     }
 
     // Rota DELETE: remove um paciente
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPaciente(@PathVariable Integer id ) {
         pacienteService.deletarPaciente(id);
         return ResponseEntity.noContent().build(); // Devolve 204 (No Content) significando que foi apagado
     }
-    
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Integer id) {
         pacienteService.ativar(id);
@@ -70,12 +73,13 @@ public class PacienteController  {
     }
     
     // Rota Put Atualiza um paciente 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Paciente> atualizarPaciente(@RequestBody Paciente paciente) {
         Paciente pacienteAtualizado = pacienteService.atualizarPaciente(paciente);
         return ResponseEntity.ok(pacienteAtualizado);
     }
-    
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Paciente> atualizar(@PathVariable Integer id, @RequestBody Paciente pacienteAtualizado) {
         // Garante que o ID do corpo da requisição é o mesmo da URL

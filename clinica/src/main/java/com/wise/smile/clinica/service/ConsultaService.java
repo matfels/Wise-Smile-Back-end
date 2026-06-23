@@ -16,11 +16,10 @@ import com.wise.smile.clinica.repositories.ConsultaRepositories;
 import com.wise.smile.clinica.repositories.DentistaRepositories;
 import com.wise.smile.clinica.repositories.PacienteRepositories;
 
-@Service // Marca a classe como um Componente de 
-//. Aqui ficam as "Regras de Negócio"
+@Service
 public class ConsultaService {
 
-    @Autowired // Injeta as classes Repositories para comunicar com o banco de dados
+    @Autowired
     private ConsultaRepositories consultaRepository;
 
     @Autowired
@@ -32,42 +31,41 @@ public class ConsultaService {
     // Marcar uma nova consulta
     public Consulta agendarConsulta(Consulta consulta) {
         
-
-        if (consulta.getDataInicio().isBefore(LocalDateTime.now())) { // Verifica se a data de início é anterior ao dia/hora atual
+        //Não permitir agendamento em datas passadas
+        if (consulta.getDataInicio().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Erro: Não é possível agendar consultas em datas passadas.");
         }
 
         //O horário final da consulta deve ser após o horário inicial
-        if (consulta.getDataEnding().isBefore(consulta.getDataInicio()) || consulta.getDataEnding().isEqual(consulta.getDataInicio())) { // Impede consultas que terminem antes de começar ou no exato momento
+        if (consulta.getDataEnding().isBefore(consulta.getDataInicio()) || consulta.getDataEnding().isEqual(consulta.getDataInicio())) {
             throw new IllegalArgumentException ("Erro: O horário de término deve ser posterior ao horário de início.");
         }
 
         //Não permitir conflito de horário para odentista
         // Utilizamos metodo e criamos no ConsultaRepositories
-        List<Consulta> conflitos = consultaRepository.findConflitosHorario( // Vai no banco e busca se esse dentista já tem consulta nesse mesmo intervalo de hora
+        List<Consulta> conflitos = consultaRepository.findConflitosHorario(
                 consulta.getDentista().getId(),
                 consulta.getDataInicio(),
                 consulta.getDataEnding()
         );
 
-        if (!conflitos.isEmpty()){ // Se a lista não vier vazia, existe choque de horários!
+        if (!conflitos.isEmpty()){
             throw new IllegalArgumentException("Erro: O dentista selecionado já possui uma consulta marcada para este horário.");
         }
 
         // Passando emaem todas as validações, definimos o status inicial e guardamos
         consulta.setStatus(StatusConsulta.AGENDADA);
-        return consultaRepository.save(consulta); // Salva no banco e retorna o objeto final
+        return consultaRepository.save(consulta);
     }
-    
     // Método para cancelar uma consulta
     public Consulta cancelarConsulta (Integer idConsulta, String motivoCancelamento){
         
         // Vai buscar a consulta à base de dados ou lança erro se não existir
-        Consulta consulta = consultaRepository.findById(idConsulta) // Busca pelo ID ou aborta jogando uma exceção
+        Consulta consulta = consultaRepository.findById(idConsulta)
                 .orElseThrow(() -> new IllegalArgumentException("Erro: Consulta não encontrada."));
 
-        // Regra  Para cancelar consultas é necessário um motivo
-        if (motivoCancelamento == null || motivoCancelamento.trim().isEmpty()) { // Valida se o texto não tá nulo nem com espaços em branco apenas
+        // Regra 3: Para cancelar consultas é necessário um motivo
+        if (motivoCancelamento == null || motivoCancelamento.trim().isEmpty()) {
             throw new IllegalArgumentException("Erro: O motivo do cancelamento é obrigatório.") ;
         }
 
@@ -80,26 +78,24 @@ public class ConsultaService {
         
     }
     
-    
-    // FILTRA A CONSULTA POR PERFIL (ADMIN, DENTISTA, USUARIO).
     public List<Consulta> listarTodas(Usuario usuarioLogado) {
         
         // Se for ADMIN, traz absolutamente todas as consultas do sistema
-        if ("ADMIN".equalsIgnoreCase(usuarioLogado.getPerfil())) { // Ignora se o 'ADMIN' vier com maiúsculas/minúsculas
+        if ("ADMIN".equalsIgnoreCase(usuarioLogado.getPerfil())) {
             return consultaRepository.findAll();
         }
         
         
         //Se for DENTISTA, faz o vínculo inteligente pelo E-mail
         if ("DENTISTA".equalsIgnoreCase(usuarioLogado.getPerfil())) {
-            Dentista dentista = dentistaRepository.findByEmail(usuarioLogado.getEmail()) // Tenta descobrir quem é o Dentista olhando o e-mail do usuário logado
+            Dentista dentista = dentistaRepository.findByEmail(usuarioLogado.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Nenhum perfil de Dentista encontrado com o e-mail deste usuário."));
             
             return consultaRepository.findByDentistaId(dentista.getId());
         }
         
         // Se for perfil COMUM, busca o paciente pelo e-mail e retorna as consultas vinculadas
-        Paciente paciente = pacienteRepository.findByEmail(usuarioLogado.getEmail()) // Como os pacientes não se cadastram pelo dentista mas sim pelo sistema, o e-mail liga a pessoa à conta
+        Paciente paciente = pacienteRepository.findByEmail(usuarioLogado.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("Paciente não encontrado para este usuário."));
             
         return consultaRepository.findByPacienteId(paciente.getId());
@@ -129,8 +125,7 @@ public class ConsultaService {
         );
         
         
-        // Pega todos os possíveis conflitos. Se houver algum conflito onde o ID do conflito seja DIFERENTE da consulta atual, é um conflito real
-        boolean conflitoReal = conflitos.stream().anyMatch(c -> !c.getId().equals(consulta.getId())); 
+        boolean conflitoReal = conflitos.stream().anyMatch(c -> !c.getId().equals(consulta.getId()));
         if (conflitoReal) {
             throw new IllegalArgumentException("Erro: O dentista selecionado já possui outra consulta marcada para este horário.");
         }
@@ -141,7 +136,7 @@ public class ConsultaService {
     // A  rotina vai rodar automaticamente a cada 1 hora (3600000 milissegundos)
     // Para testar agora, você pode trocar por 10000 (10 segundos)
     
-    @Scheduled(fixedDelay = 3600000) // Spring Boot aciona esse método sozinho periodicamente (como um "robô" de cron)
+    @Scheduled(fixedDelay = 3600000) 
     public void rotinaFinalizarConsultas() {
         // Dispara o update no banco de dados passando a data e hora exatas deste segundo
         consultaRepository.finalizarConsultasPassadas(LocalDateTime.now());

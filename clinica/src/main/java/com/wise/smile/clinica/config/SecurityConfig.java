@@ -17,19 +17,20 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration // Indica que esta classe contém configurações que o Spring deve ler ao iniciar
-@EnableMethodSecurity // Permite o uso de anotações como @PreAuthorize nos controllers para controle de acesso por cargos
+@Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 	
-	@Autowired // Injeta o nosso filtro de segurança (que intercepta as requisições para checar o JWT)
+	@Autowired
     private SecurityFilter securityFilter;
 	
-	@Bean // Exporta este método para o Spring usar como configuração central de segurança
+	// Nao pede a senha ao iniciar o spring
+	@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-        		.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Aplica as regras de CORS (libera o front-end para acessar a API)
-        		.csrf(csrf -> csrf.disable()) // Desabilita proteção CSRF (não é necessária quando usamos tokens JWT)
-                // Avisa ao Spring que a autenticação será via Token (Stateless, ou seja, sem guardar sessão no servidor)
+        		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        		.csrf(csrf -> csrf.disable())
+                //Avisa ao Spring que a autenticação será via Token (Stateless)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     // Libera APENAS a rota de login (para a pessoa conseguir o crachá)
@@ -43,7 +44,7 @@ public class SecurityConfig {
                     req.anyRequest().authenticated();
                 
                 })
-                // Coloca o nosso Filtro de checagem do JWT ANTES do filtro padrão do Spring Security
+                // Coloca o nosso Filtro (Catraca) ANTES do filtro padrão do Spring
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -52,18 +53,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Libera acesso vindo do Angular na porta 4200
-        config.setAllowedMethods(Arrays.asList("*")); // Permite todos os métodos HTTP (GET, POST, PUT, DELETE)
-        config.setAllowedHeaders(Arrays.asList("*")); // Permite o envio de qualquer cabeçalho (como o de Authorization)
+        config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        config.setAllowedMethods(Arrays.asList("*")); 
+        config.setAllowedHeaders(Arrays.asList("*")); 
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config); // Aplica essas regras do CORS para todas as rotas (/**)
+        source.registerCorsConfiguration("/**", config);
         return source;
   
     }
 
-    @Bean // Configura qual codificador de senhas a aplicação vai usar
+    @Bean
     public PasswordEncoder passwordEncoder() {
-    	return new BCryptPasswordEncoder(); // Retorna o BCrypt, que é seguro e cria hashes unidirecionais
+    	return new BCryptPasswordEncoder();
     }
 }
+

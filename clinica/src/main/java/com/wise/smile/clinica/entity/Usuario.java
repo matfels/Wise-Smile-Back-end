@@ -19,13 +19,12 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 	
-// Avisa ao Spring/JPA que esta classe representa uma entidade/tabela real do banco de dados
-@Entity 
+@Entity // Avisa o java que essa classe não e apenas um código e sim que representa uma tabela real na base de dados.
 
-@Table(name = "usuarios") // Define explicitamente que o nome da tabela gerada no banco será "usuarios"
-@Data // Anotação do Lombok que gera automaticamente os Getters, Setters e o método toString invisíveis
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // Blindando falhas de serialização (transformação em JSON) quando há carregamento tardio
-public class Usuario implements UserDetails { // Implementar UserDetails diz ao Spring Security que isso é um "Usuário" do sistema dele
+@Table(name = "usuarios")
+@Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  //<-- Blindando
+public class Usuario implements UserDetails {
 	public Usuario() {
     }
 	
@@ -43,30 +42,30 @@ public class Usuario implements UserDetails { // Implementar UserDetails diz ao 
 		this.ultimoLogin = ultimoLogin;
 	}
 
-    @Id // Marca o campo como a Chave Primária do banco de dados (Primary Key)
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // O banco de dados vai gerar o ID automaticamente usando auto-incremento
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
 
-	@Column(nullable = false, length = 100) // Campo não pode ser vazio e tem limite de 100 caracteres
+	@Column(nullable = false, length = 100)
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 14) // 'unique' garante que não haverá dois CPFs iguais
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
 
-    @Column(nullable = false, unique = true, length = 100) // E-mail também deve ser único e é usado como Login
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, length = 100)
     private String senha;
 
-    @Column(nullable = false, length = 100) // Cargo do usuário no sistema (ex: ADMIN, USER, DENTISTA)
+    @Column(nullable = false, length = 100)
     private String perfil;
 
-    @Column(columnDefinition = "boolean default true") // Impede que comece nulo no banco e assume 'true'
+    @Column(columnDefinition = "boolean default true")
     private Boolean ativo;
 
-    @Column(name = "data_criacao", updatable = false) // Data que foi criado (não pode ser atualizada via updates)
+    @Column(name = "data_criacao", updatable = false)
     private LocalDateTime dataCriacao;
 
     @Column(name = "ultimo_login")
@@ -81,18 +80,18 @@ public class Usuario implements UserDetails { // Implementar UserDetails diz ao 
 
 
 	// @PrePersist para preencher a data de criação automaticamente antes de salvar
-    @PrePersist // Um "gatilho" do JPA. Esse método executa SOZINHO imediatamente antes de inserir a linha no banco de dados.
+    @PrePersist
     protected void onCreate() {
-        this.dataCriacao = LocalDateTime.now(); // Grava a hora exata da criação
+        this.dataCriacao = LocalDateTime.now();
         if (this.ativo == null) {
             this.ativo = true;
         }
     }
 
 
-//------------------------ METÓDOS EXIGIDOS PELA INTERFACE UserDetails ------------------------
+//------------------------
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { // Define as "permissões" (Roles) baseadas no perfil do banco
+    public Collection<? extends GrantedAuthority> getAuthorities() {
     	if ("ADMIN".equalsIgnoreCase(this.perfil)) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         } else {
@@ -101,33 +100,33 @@ public class Usuario implements UserDetails { // Implementar UserDetails diz ao 
     }
 
     @Override
-    public String getPassword() { // Diz ao Spring Security de onde vem a senha
+    public String getPassword() {
         return this.senha;
     }
 
     @Override
-    public String getUsername() { // Diz ao Spring Security qual campo é usado como "nome de usuário" (no caso, o email)
+    public String getUsername() {
         return this.email;
     }
 
     @Override
-    public boolean isAccountNonExpired() { // Conta não expira
+    public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
-    public boolean isAccountNonLocked() { // Conta não está bloqueada
+    public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
-    public boolean isCredentialsNonExpired() { // As credenciais/senha não expiraram
+    public boolean isCredentialsNonExpired() {
         return true;
     }
     
     
     @Override
-    public boolean isEnabled() { // Diz se o usuário está ativo no sistema para permitir o login
+    public boolean isEnabled() {
         // Trava contra NullPointerException no Spring Security + Blindagem
         if (this.ativo == null) {
             return false;

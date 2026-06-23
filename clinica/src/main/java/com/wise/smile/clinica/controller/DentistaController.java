@@ -78,7 +78,7 @@ public class DentistaController{
         dentistaService.ativarDentista(id);
         return ResponseEntity.noContent().build();
     }
-    
+   
     @GetMapping("/especialidade/{id}")
     public ResponseEntity<List<Dentista>> listarPorEspecialidade(@PathVariable Integer id) {
         List<Dentista> dentistasFiltrados = dentistaService.buscarPorEspecialidadeId(id);

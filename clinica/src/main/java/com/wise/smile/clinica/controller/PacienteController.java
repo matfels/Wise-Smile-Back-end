@@ -24,12 +24,12 @@ import com.wise.smile.clinica.service.PacienteService;
 @RequestMapping("/pacientes") //as rotas aqui vão começar com http://localhost:8081/pacientes
 public class PacienteController  {
 
-    @Autowired
+    @Autowired // Injeta o serviço de regras de negócio de Paciente
     private PacienteService pacienteService;
     
     // Rota Usada para CRIAR um novo paciente
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')") // Garante que APENAS usuários com cargo 'ADMIN' consigam usar essa rota
+    @PostMapping // Método POST para salvar novos dados
     public ResponseEntity<?> registarPaciente( @RequestBody Paciente paciente) {
         try {
             Paciente pacienteSalvo = pacienteService.registarPaciente(paciente);
@@ -42,15 +42,15 @@ public class PacienteController  {
     }
 
     //GET lista todos os pacientes
-    @GetMapping
+    @GetMapping // Método GET para buscar dados. Sem @PreAuthorize específico, exige apenas estar logado
     public ResponseEntity<List<Paciente>> listarTodos() {
         List<Paciente> pacientes = pacienteService.listarTodos();
         return ResponseEntity.ok(pacientes) ; // Devolve o código 200 (OK) e a lista
     }
 
     // Rota GET com ID: busca apenas um paciente específico
-    @GetMapping("/{id}")
-    public ResponseEntity<Paciente> buscarPorId(@PathVariable Integer id) {
+    @GetMapping("/{id}") // O {id} é uma variável dinâmica na URL
+    public ResponseEntity<Paciente> buscarPorId(@PathVariable Integer id) { // @PathVariable pega o id da URL e joga no parâmetro
         Optional<Paciente> paciente = pacienteService.buscarPorId(id);
         
         // quando encontrar, retorna 200  (OK). Se não, retorna 404 (Not Found)
@@ -60,13 +60,14 @@ public class PacienteController  {
 
     // Rota DELETE: remove um paciente
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") // Método DELETE para exclusões
     public ResponseEntity<Void> deletarPaciente(@PathVariable Integer id ) {
         pacienteService.deletarPaciente(id);
         return ResponseEntity.noContent().build(); // Devolve 204 (No Content) significando que foi apagado
     }
+    
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}/ativar")
+    @PutMapping("/{id}/ativar") // Método PUT, mas em uma rota específica de ativação
     public ResponseEntity<Void> ativar(@PathVariable Integer id) {
         pacienteService.ativar(id);
         return ResponseEntity.noContent().build();
@@ -74,13 +75,14 @@ public class PacienteController  {
     
     // Rota Put Atualiza um paciente 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping
+    @PutMapping // Método PUT para atualizar a entidade toda
     public ResponseEntity<Paciente> atualizarPaciente(@RequestBody Paciente paciente) {
         Paciente pacienteAtualizado = pacienteService.atualizarPaciente(paciente);
         return ResponseEntity.ok(pacienteAtualizado);
     }
+    
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") // Método PUT focando num ID específico
     public ResponseEntity<Paciente> atualizar(@PathVariable Integer id, @RequestBody Paciente pacienteAtualizado) {
         // Garante que o ID do corpo da requisição é o mesmo da URL
         pacienteAtualizado.setId(id); 

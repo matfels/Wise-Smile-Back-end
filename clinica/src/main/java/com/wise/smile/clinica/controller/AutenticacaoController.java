@@ -14,42 +14,41 @@ import com.wise.smile.clinica.dto.DadosTokenJWT;
 import com.wise.smile.clinica.entity.Usuario;
 import com.wise.smile.clinica.service.TokenService;
 
-@RestController
-@RequestMapping("/login")
+@RestController // Define que esta classe é um controlador REST (recebe requisições HTTP e devolve JSON)
+@RequestMapping("/login") // Define que o endereço base para acessar os métodos desta classe é "/login"
 public class AutenticacaoController {
 
-    @Autowired
+    @Autowired // Injeta automaticamente a dependência do Spring Security responsável por gerenciar a autenticação
     private AuthenticationConfiguration configuration;
-// O "Gerente" que verifica a senha
+    // O "Gerente" que verifica a senha
 
-    @Autowired
+    @Autowired // Injeta o serviço que criamos para manipular e gerar os tokens JWT
     private TokenService tokenService;
-// A nossa "Fábrica de Crachás"
+    // A "Fábrica de Crachás"
 
     
-    @PostMapping
-    public ResponseEntity efetuarLogin(@RequestBody DadosAutenticacao dados) {
+    // Mapeia requisições do tipo POST para este método (usado para enviar dados sensíveis, como senhas)
+    public ResponseEntity efetuarLogin(@RequestBody DadosAutenticacao dados) { // @RequestBody extrai o JSON da requisição para o objeto 'dados'
         
         try {
             //Pega no email e senha do envelope e empacota no formato que o Spring entende
             var authenticationToken = new UsernamePasswordAuthenticationToken(dados.email(), dados.senha());
             
-            
-            // Pega AutenticacaoService, procurar no banco e verificar o BCrypt 
+            // Pega o gerenciador de autenticação para procurar no banco e verificar o hash BCrypt da senha
             AuthenticationManager manager = configuration.getAuthenticationManager() ;
             var authentication = manager.authenticate(authenticationToken);
             
-            // iSOLAMOS O USUÁRIO pegando o objeto inteiro do usuário autenticado
+            // Se a senha estiver correta, isolamos o objeto inteiro do usuário autenticado
             Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
             
-            // GERANDO  O TOKEN
+            // Gera o Token JWT contendo as informações do usuário
             var tokenJWT = tokenService.gerarToken(usuarioLogado);
             
-            
-            //  Enviamos o Token E o ID usando o getId()
+            // Retorna o status 200 (OK) enviando o Token gerado e o ID do usuário para o front-end
             return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, usuarioLogado.getId()));
             
         } catch (Exception e) {
+            // Caso falhe (senha errada ou usuário não encontrado), devolve status 400 (Bad Request)
             return ResponseEntity.badRequest().body("Acesso Negado: Usuário ou senha incorretos.");
         }
     }

@@ -49,7 +49,7 @@ public class UsuarioService {
     
     //listar todos os usuários
     public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
+        return  .findAll();
     }
 
     //  atualizar um usuário
